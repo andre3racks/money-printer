@@ -23,8 +23,8 @@ def fetch_data(ticker: str = "BTC-USD", interval: str = "1h") -> pd.DataFrame:
     
     print(f"Fetching fresh data for {ticker}...")
     
-    # 2 years of data
-    start_date = (datetime.datetime.now() - datetime.timedelta(days=365*2)).strftime("%Y-%m-%d")
+    # 2 years of data (slightly less than 730 days to avoid YF limits)
+    start_date = (datetime.datetime.now() - datetime.timedelta(days=720)).strftime("%Y-%m-%d")
     
     try:
         data = vbt.YFData.download(

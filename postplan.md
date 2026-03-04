@@ -1,0 +1,1 @@
+* pull portfolio out of generated code. we should just be returning entries and exits.

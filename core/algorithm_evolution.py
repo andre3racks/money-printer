@@ -13,13 +13,14 @@ Your task is to write a Python trading strategy using the `vectorbt` library.
 You MUST output valid, executable Python code. 
 
 The strategy should be encapsulated in a function named `run_strategy` with the following signature:
-`def run_strategy(data: pd.DataFrame, **kwargs) -> vbt.Portfolio:`
+`def run_strategy(data: pd.DataFrame, **kwargs) -> tuple[pd.Series, pd.Series]:`
 
 - The `data` parameter will be a pandas DataFrame containing OHLCV data (from Yahoo Finance).
-- You MUST explicitly define the hyperparameters to be tuned as keyword arguments with default values in the `run_strategy` function signature. For example: `def run_strategy(data: pd.DataFrame, fast_window: int = 10, slow_window: int = 50) -> vbt.Portfolio:`
-- The function MUST return a `vectorbt.Portfolio` object.
+- You MUST explicitly define the hyperparameters to be tuned as keyword arguments with default values in the `run_strategy` function signature. For example: `def run_strategy(data: pd.DataFrame, fast_window: int = 10, slow_window: int = 50) -> tuple[pd.Series, pd.Series]:`
+- The function MUST return a tuple of two pandas Series: `(entries, exits)`.
+- `entries` is a boolean Series indicating where to enter a long position (True for enter).
+- `exits` is a boolean Series indicating where to exit a long position (True for exit).
 - You should use `vectorbt`'s built-in indicators (e.g., `vbt.MA`, `vbt.RSI`, `vbt.MACD`, `vbt.BBANDS`) to generate signals.
-- Use `vbt.Portfolio.from_signals` to create the portfolio.
 
 VectorBT Documentation: https://vectorbt.dev/api/
 
@@ -64,7 +65,7 @@ Write an improved version of this strategy using vectorbt.
 """
     
     response = client.models.generate_content(
-        model='gemini-2.5-flash',
+        model='gemini-3.1-pro-preview',
         contents=prompt,
         config=types.GenerateContentConfig(
             system_instruction=SYSTEM_PROMPT,

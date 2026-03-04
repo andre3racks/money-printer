@@ -69,6 +69,7 @@ def run_evolution_loop(ticker: str, interval: str, iterations: int):
         
         # 5. Evaluate
         logging.info(f"Evaluating new algorithm {new_id}...")
+        file_path = save_algorithm(new_code, new_id)
         eval_result = evaluate_strategy_code(new_code, data)
         
         if not eval_result.get("success"):
@@ -77,9 +78,6 @@ def run_evolution_loop(ticker: str, interval: str, iterations: int):
             
         metrics = eval_result.get("metrics")
         logging.info(f"Evaluation success! Fitness: {metrics.get('fitness', 0):.4f}, Sharpe: {metrics.get('Sharpe Ratio', 0):.4f}")
-        
-        # 6. Save code and update leaderboard
-        file_path = save_algorithm(new_code, new_id)
         
         new_entry = {
             "id": new_id,

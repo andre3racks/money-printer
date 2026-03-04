@@ -26,12 +26,12 @@ def evaluate_strategy_code(code: str, data: pd.DataFrame) -> Dict[str, Any]:
         run_strategy = local_env['run_strategy']
         
         # 1. Run Strategy with default parameters
-        portfolio = run_strategy(data)
+        entries, exits = run_strategy(data)
         
-        if not isinstance(portfolio, vbt.Portfolio):
-            return {"success": False, "error": f"run_strategy returned {type(portfolio)}, expected vbt.Portfolio."}
-            
-        # 2. Extract Metrics
+        # 2. Build Portfolio
+        portfolio = vbt.Portfolio.from_signals(data['Close'], entries, exits, freq='1h')
+        
+        # 3. Extract Metrics
         stats = portfolio.stats()
         
         # Extract key metrics
