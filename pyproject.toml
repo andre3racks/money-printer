@@ -1,0 +1,14 @@
+[project]
+name = "money-printer"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "google-genai>=1.65.0",
+    "pandas>=2.3.3",
+    "pyarrow>=23.0.1",
+    "requests>=2.32.5",
+    "vectorbt>=0.28.2",
+    "yfinance>=1.2.0",
+]
