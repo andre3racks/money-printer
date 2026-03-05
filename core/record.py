@@ -3,19 +3,27 @@ from pathlib import Path
 from typing import Dict, Any, List
 import os
 
-LEADERBOARD_FILE = Path("leaderboard.json")
+def get_leaderboard_file(strategy_name: str = None) -> Path:
+    """Returns the correct leaderboard file path based on the strategy name."""
+    leaderboard_dir = Path("leaderboards")
+    
+    if strategy_name:
+        return leaderboard_dir / f"leaderboard_{strategy_name}.json"
+    return leaderboard_dir / "leaderboard.json"
 
-def load_leaderboard() -> List[Dict[str, Any]]:
+def load_leaderboard(strategy_name: str = None) -> List[Dict[str, Any]]:
     """Loads the leaderboard from disk. Fails hard if corrupted."""
-    if not LEADERBOARD_FILE.exists():
+    file_path = get_leaderboard_file(strategy_name)
+    if not file_path.exists():
         return []
     
-    with open(LEADERBOARD_FILE, "r") as f:
+    with open(file_path, "r") as f:
         return json.load(f)
 
-def save_leaderboard(leaderboard: List[Dict[str, Any]]):
+def save_leaderboard(leaderboard: List[Dict[str, Any]], strategy_name: str = None):
     """Saves the leaderboard to disk."""
-    with open(LEADERBOARD_FILE, "w") as f:
+    file_path = get_leaderboard_file(strategy_name)
+    with open(file_path, "w") as f:
         json.dump(leaderboard, f, indent=4)
 
 def update_leaderboard(leaderboard: List[Dict[str, Any]], new_entry: Dict[str, Any]) -> List[Dict[str, Any]]:

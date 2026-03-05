@@ -12,7 +12,7 @@ from google.genai.errors import APIError
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def run_evolution_loop(ticker: str, interval: str, iterations: int):
+def run_evolution_loop(ticker: str, interval: str, iterations: int, strategy_name: str = None):
     logging.info(f"Starting Evolutionary Loop Engine for {ticker} at {interval} interval")
     
     # 1. Initialize/Load Data
@@ -26,7 +26,7 @@ def run_evolution_loop(ticker: str, interval: str, iterations: int):
     logging.info(f"Data shape: {data.shape}")
     
     # 2. Load Leaderboard
-    leaderboard = load_leaderboard()
+    leaderboard = load_leaderboard(strategy_name)
     logging.info(f"Loaded leaderboard with {len(leaderboard)} entries.")
     
     for i in range(iterations):
@@ -58,7 +58,7 @@ def run_evolution_loop(ticker: str, interval: str, iterations: int):
         # 4. Generate new algorithm
         logging.info("Generating new algorithm via LLM...")
         try:
-            new_code = generate_algorithm(ancestor_code, ancestor_performance)
+            new_code = generate_algorithm(ancestor_code, ancestor_performance, strategy_name)
         except APIError as e:
             logging.error(f"Gemini API Error: {e}")
             logging.info("Sleeping for 10 seconds before continuing...")
@@ -69,7 +69,7 @@ def run_evolution_loop(ticker: str, interval: str, iterations: int):
         
         # 5. Evaluate
         logging.info(f"Evaluating new algorithm {new_id}...")
-        file_path = save_algorithm(new_code, new_id)
+        file_path = save_algorithm(new_code, new_id, strategy_name)
         eval_result = evaluate_strategy_code(new_code, data)
         
         if not eval_result.get("success"):
@@ -90,7 +90,7 @@ def run_evolution_loop(ticker: str, interval: str, iterations: int):
         }
         
         leaderboard = update_leaderboard(leaderboard, new_entry)
-        save_leaderboard(leaderboard)
+        save_leaderboard(leaderboard, strategy_name)
         
         logging.info(f"Saved algorithm and updated leaderboard. Current top fitness: {leaderboard[0]['metrics']['fitness']:.4f}")
         
@@ -104,7 +104,8 @@ if __name__ == "__main__":
     parser.add_argument("--ticker", type=str, default="BTC-USD", help="Ticker symbol to fetch data for")
     parser.add_argument("--interval", type=str, default="1h", help="Data interval (e.g., 1d, 1h)")
     parser.add_argument("--iterations", type=int, default=5, help="Number of evolution iterations to run")
+    parser.add_argument("--strategy", type=str, default=None, help="Name of the strategy (looks up strategies/<name>.md)")
     
     args = parser.parse_args()
     
-    run_evolution_loop(args.ticker, args.interval, args.iterations)
+    run_evolution_loop(args.ticker, args.interval, args.iterations, args.strategy)

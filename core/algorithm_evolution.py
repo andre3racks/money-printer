@@ -41,16 +41,24 @@ def extract_python_code(text: str) -> str:
         return match.group(1).strip()
     return text.strip()
 
-def generate_algorithm(ancestor_code: str = None, ancestor_performance: str = None) -> str:
+def generate_algorithm(ancestor_code: str = None, ancestor_performance: str = None, strategy_name: str = None) -> str:
     """
     Prompts the LLM to generate a new trading algorithm.
     If ancestor_code and ancestor_performance are provided, it asks the LLM to evolve the strategy.
+    If strategy_name is provided, it reads the strategy description from strategies/{strategy_name}.md and incorporates it into the prompt.
     Returns the generated Python code as a string.
     """
     client = get_llm_client()
     
     prompt = "Write a new trading strategy using vectorbt.\n"
     
+    if strategy_name:
+        strategy_file = Path(f"strategies/{strategy_name}.md")
+        if strategy_file.exists():
+            with open(strategy_file, "r") as f:
+                strategy_description = f.read()
+            prompt += f"\nHere are the specific instructions for the trading strategy:\n{strategy_description}\n"
+        
     if ancestor_code and ancestor_performance:
         prompt = f"""
 Evolve the following ancestor trading strategy to improve its performance.
@@ -77,9 +85,15 @@ Write an improved version of this strategy using vectorbt.
     code = extract_python_code(response.text)
     return code
 
-def save_algorithm(code: str, algorithm_id: str) -> str:
+def save_algorithm(code: str, algorithm_id: str, strategy_name: str = None) -> str:
     """Saves the generated algorithm code to a file."""
-    file_path = ALGO_DIR / f"strategy_{algorithm_id}.py"
+    if strategy_name:
+        algo_dir = Path("algorithms") / strategy_name
+    else:
+        algo_dir = Path("algorithms")
+        
+    algo_dir.mkdir(parents=True, exist_ok=True)
+    file_path = algo_dir / f"strategy_{algorithm_id}.py"
     
     # Ensure necessary imports are present
     imports = "import pandas as pd\nimport vectorbt as vbt\nimport numpy as np\n\n"
