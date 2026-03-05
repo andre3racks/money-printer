@@ -17,6 +17,8 @@ The strategy should be encapsulated in a function named `run_strategy` with the 
 
 - The `data` parameter will be a pandas DataFrame containing OHLCV data (from Yahoo Finance).
 - You MUST explicitly define the hyperparameters to be tuned as keyword arguments with default values in the `run_strategy` function signature. For example: `def run_strategy(data: pd.DataFrame, fast_window: int = 10, slow_window: int = 50) -> tuple[pd.Series, pd.Series]:`
+- You MUST define a global dictionary named `HYPERPARAMETERS` outside of the `run_strategy` function that provides a list of options for each hyperparameter to be used for tuning combinations. For example: `HYPERPARAMETERS = {"fast_window": [10, 15, 20], "slow_window": [50, 100, 200]}`
+- The keys in `HYPERPARAMETERS` must exactly match the keyword arguments in `run_strategy`.
 - The function MUST return a tuple of two pandas Series: `(entries, exits)`.
 - `entries` is a boolean Series indicating where to enter a long position (True for enter).
 - `exits` is a boolean Series indicating where to exit a long position (True for exit).
