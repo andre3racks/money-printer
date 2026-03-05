@@ -1,8 +1,8 @@
 import os
 import re
 from pathlib import Path
-from google import genai
-from google.genai import types
+
+from core.llm import get_llm_provider
 
 ALGO_DIR = Path("algorithms")
 ALGO_DIR.mkdir(parents=True, exist_ok=True)
@@ -29,10 +29,6 @@ VectorBT Documentation: https://vectorbt.dev/api/
 Do not include any explanations or markdown formatting outside of the Python code block. Only provide the raw Python code.
 """
 
-def get_llm_client():
-    # Ensure GEMINI_API_KEY is set in the environment
-    return genai.Client()
-
 def extract_python_code(text: str) -> str:
     """Extracts Python code from a markdown-formatted string."""
     pattern = r"```python\n(.*?)\n```"
@@ -48,7 +44,7 @@ def generate_algorithm(ancestor_code: str = None, ancestor_performance: str = No
     If strategy_name is provided, it reads the strategy description from strategies/{strategy_name}.md and incorporates it into the prompt.
     Returns the generated Python code as a string.
     """
-    client = get_llm_client()
+    provider = get_llm_provider()
     
     prompt = "Write a new trading strategy using vectorbt.\n"
     
@@ -74,15 +70,9 @@ Ancestor Code:
 Write an improved version of this strategy using vectorbt.
 """
     
-    response = client.models.generate_content(
-        model='gemini-3.1-pro-preview',
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            system_instruction=SYSTEM_PROMPT,
-        ),
-    )
+    response_text = provider.generate_code(prompt, SYSTEM_PROMPT)
     
-    code = extract_python_code(response.text)
+    code = extract_python_code(response_text)
     return code
 
 def save_algorithm(code: str, algorithm_id: str, strategy_name: str = None) -> str:

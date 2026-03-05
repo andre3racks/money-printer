@@ -1,0 +1,24 @@
+[
+    {
+        "id": "52dbbec1-0502-40cc-807d-5fa7b2a8b366",
+        "file_path": "algorithms/strategy_52dbbec1-0502-40cc-807d-5fa7b2a8b366.py",
+        "parent_id": null,
+        "metrics": {
+            "Total Return [%]": -7.369493213686823,
+            "Sharpe Ratio": -0.18720178710712115,
+            "Max Drawdown [%]": 27.121304194247355,
+            "Win Rate [%]": 37.75100401606426,
+            "fitness": -7.728709696509078,
+            "is_valid": true,
+            "best_params": {
+                "macd_fast": 10,
+                "macd_slow": 21,
+                "macd_signal": 11,
+                "sma_window": 150
+            }
+        },
+        "timestamp": 1772689895.5181158,
+        "ticker": "BTC-USD",
+        "interval": "1h"
+    }
+]
